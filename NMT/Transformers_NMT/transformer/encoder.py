@@ -56,8 +56,8 @@ class Encoder(nn.Module):
     def forward(self, padded_input, input_lengths, return_attns=False):
         """
         Args:
-            padded_input: N x T
-            input_lengths: N
+            padded_input: batch_size x max_len
+            input_lengths: max_len 也就是一个列表　每个元素代表着当前句子的真实长度
         Returns:
             enc_output: N x T x H
         """
@@ -67,12 +67,16 @@ class Encoder(nn.Module):
         enc_outputs = self.src_emb(padded_input)
         enc_outputs += self.pos_emb(enc_outputs)
         enc_output = self.dropout(enc_outputs)
+        # print(enc_output.size())   # torch.Size([128, 21, 512])  batch_size x maxlen x hidden_size
 
         # Prepare masks
         non_pad_mask = get_non_pad_mask(enc_output, input_lengths=input_lengths)
+        # print(non_pad_mask.size())   # torch.Size([128, 21, 1]) batch_size x maxlen x 1
+
         length = padded_input.size(1)
 
         slf_attn_mask = get_attn_pad_mask(enc_output, input_lengths, length)
+        # print(slf_attn_mask.size())   # torch.Size([128, 21, 21])
 
         for enc_layer in self.layer_stack:
             enc_output, enc_slf_attn = enc_layer(
@@ -85,6 +89,8 @@ class Encoder(nn.Module):
 
         if return_attns:
             return enc_output, enc_slf_attn_list
+        # print(enc_output.size())   # torch.Size([128, 21, 512])
+
         return enc_output,
 
 

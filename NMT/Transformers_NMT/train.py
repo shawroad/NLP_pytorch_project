@@ -19,7 +19,7 @@ from transformer.loss import cal_performance
 from transformer.optimizer import TransformerOptimizer
 from transformer.transformer import Transformer
 
-from config import Config
+from config import Config, logger
 from data_gen import TranslateDataset, pad_collate
 from utils import save_checkpoint, AverageMeter, clip_gradient, parse_args
 
@@ -80,7 +80,7 @@ def train_net(args):
                            model=model,
                            optimizer=optimizer,
                            epoch=epoch,
-                           logger=Config.logger,
+                           logger=logger,
                            writer=writer)
 
         writer.add_scalar('epoch/train_loss', train_loss, epoch)
@@ -92,7 +92,7 @@ def train_net(args):
         # One epoch's validation
         valid_loss = valid(valid_loader=valid_loader,
                            model=model,
-                           logger=Config.logger)
+                           logger=logger)
         writer.add_scalar('epoch/valid_loss', valid_loss, epoch)
 
         # Check if there was an improvement
