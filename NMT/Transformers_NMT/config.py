@@ -50,8 +50,9 @@ class Config:
 
     # 每隔50步打印一次
     print_freq = 50  # print training/validation stats  every __ batches
-
-
+    
+    d_model = 512  # 隐层维度大小
+    
 
 def get_logger():
     '''
