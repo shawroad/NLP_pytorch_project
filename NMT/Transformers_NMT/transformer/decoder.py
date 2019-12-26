@@ -66,7 +66,7 @@ class Decoder(nn.Module):
         self.tgt_word_prj = nn.Linear(d_model, n_tgt_vocab, bias=False)  # 解码的输出
         nn.init.xavier_normal_(self.tgt_word_prj.weight)
 
-        # 解码的输出全连接和词嵌入的全连接是否搞成权重共享
+        # 解码的输出全连接和词嵌入的全连接是否搞成权重共享 也就是用词嵌入的权重来初始化最后输出的全连接网络
         if tgt_emb_prj_weight_sharing:
             # Share the weight matrix between target word embedding & the final logit dense layer
             self.tgt_word_prj.weight = self.tgt_word_emb.weight
@@ -97,6 +97,7 @@ class Decoder(nn.Module):
         return ys_in_pad, ys_out_pad
 
     def forward(self, padded_input, encoder_padded_outputs, encoder_input_lengths, return_attns=False):
+        # self.decoder(padded_target, encoder_padded_outputs, input_lengths)
         """
         Args:
             padded_input: batch_size x max_len
@@ -107,24 +108,37 @@ class Decoder(nn.Module):
 
         # Get Deocder Input and Output
         ys_in_pad, ys_out_pad = self.preprocess(padded_input)
+        # print(ys_in_pad.size())   # torch.Size([128, 24])  # 这个加了开始
+        # print(ys_out_pad.size())   # torch.Size([128, 24])　　# 这个加了结束
 
         # Prepare masks　把解码输入填充的部分全部置0  相当于mask掉
         non_pad_mask = get_non_pad_mask(ys_in_pad, pad_idx=self.eos_id)  # 把padding部分全部加零
+        # print(non_pad_mask.size())   # torch.Size([128, 24, 1])   # 128个24行1列的小矩阵 24中前面为1,后面有部分为0即为填充部分
+        # print(non_pad_mask)
 
         slf_attn_mask_subseq = get_subsequent_mask(ys_in_pad)   # 生成和ys_in_pad一样规格的mask矩阵
+        # print(slf_attn_mask_subseq.size())   # torch.Size([128, 24, 24])
+
         slf_attn_mask_keypad = get_attn_key_pad_mask(seq_k=ys_in_pad,
                                                      seq_q=ys_in_pad,
                                                      pad_idx=self.eos_id)   # 对q, k 也加上mask
+        # print(slf_attn_mask_keypad.size())   # torch.Size([128, 24, 24])
+        # print(slf_attn_mask_keypad)
+
         slf_attn_mask = (slf_attn_mask_keypad + slf_attn_mask_subseq).gt(0)
+        # print(slf_attn_mask.size())   # torch.Size([128, 24, 24])
+        # print(slf_attn_mask)   # 上三角的mask矩阵
 
         output_length = ys_in_pad.size(1)
         dec_enc_attn_mask = get_attn_pad_mask(encoder_padded_outputs,
                                               encoder_input_lengths,
                                               output_length)
+        print(dec_enc_attn_mask.size())   # torch.Size([128, 24, 21])
 
         # Forward
         dec_output = self.dropout(self.tgt_word_emb(ys_in_pad) * self.x_logit_scale +
                                   self.positional_encoding(ys_in_pad))
+        # print(dec_output.size())   # torch.Size([128, 24, 512])
 
         for dec_layer in self.layer_stack:
             dec_output, dec_slf_attn, dec_enc_attn = dec_layer(
@@ -231,15 +245,7 @@ class Decoder(nn.Module):
                     remained_hyps.append(hyp)
 
             hyps = remained_hyps
-            # if len(hyps) > 0:
-            #     print('remeined hypothes: ' + str(len(hyps)))
-            # else:
-            #     print('no hypothesis. Finish decoding.')
-            #     break
-            #
-            # for hyp in hyps:
-            #     print('hypo: ' + ''.join([char_list[int(x)]
-            #                               for x in hyp['yseq'][0, 1:]]))
+
         # end for i in range(maxlen)
         nbest_hyps = sorted(ended_hyps, key=lambda x: x['score'], reverse=True)[
                      :min(len(ended_hyps), nbest)]
@@ -250,8 +256,9 @@ class Decoder(nn.Module):
 
 
 class DecoderLayer(nn.Module):
-    ''' Compose with three layers '''
-
+    '''
+    Compose with three layers
+    '''
     def __init__(self, d_model, d_inner, n_head, d_k, d_v, dropout=0.1):
         super(DecoderLayer, self).__init__()
         self.slf_attn = MultiHeadAttention(n_head, d_model, d_k, d_v, dropout=dropout)
@@ -259,12 +266,17 @@ class DecoderLayer(nn.Module):
         self.pos_ffn = PositionwiseFeedForward(d_model, d_inner, dropout=dropout)
 
     def forward(self, dec_input, enc_output, non_pad_mask=None, slf_attn_mask=None, dec_enc_attn_mask=None):
-        dec_output, dec_slf_attn = self.slf_attn(
-            dec_input, dec_input, dec_input, mask=slf_attn_mask)
-        dec_output *= non_pad_mask
 
+        # 解码输入之间的attention
+        dec_output, dec_slf_attn = self.slf_attn(
+            dec_input, dec_input, dec_input, mask=slf_attn_mask
+        )   # 解码输入之间的attention  所以带进去的mask矩阵是个上三角阵
+        dec_output *= non_pad_mask  # 把padding那块算的attention裁剪掉
+
+        # 解码与编码输出的attention
         dec_output, dec_enc_attn = self.enc_attn(
-            dec_output, enc_output, enc_output, mask=dec_enc_attn_mask)
+            dec_output, enc_output, enc_output, mask=dec_enc_attn_mask
+        )
         dec_output *= non_pad_mask
 
         dec_output = self.pos_ffn(dec_output)

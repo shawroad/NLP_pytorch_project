@@ -14,6 +14,8 @@ from torch.utils.data import Dataset
 from config import logger
 from config import Config
 from utils import sequence_to_text
+from torch.utils.data.dataloader import default_collate
+
 
 logger.info('loading samples...')
 # 加载数据　并统计了加载数据的时间
@@ -57,7 +59,7 @@ def pad_collate(batch):
     # sort it by input lengths (long to short)
     batch.sort(key=lambda x: x[2], reverse=True)
 
-    return batch
+    return default_collate(batch)
 
 
 class TranslateDataset(Dataset):
