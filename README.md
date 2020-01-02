@@ -20,10 +20,10 @@
       004-BERT_Classification
       
 ### 5-Text-Generation
-      001-NNLM.py	NLP	10 days ago
-      002-RNN.py	NLP	10 days ago
-      003-LSTM.py	NLP	10 days ago
-      004-BILSTM.py	NLP	10 days ago
+      001-NNLM.py	
+      002-RNN.py	
+      003-LSTM.py	
+      004-BILSTM.py	
       004-transformer-greedy search.py
       005-lstm_text_generation	
       006-bilstm_text_generation
