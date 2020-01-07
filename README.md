@@ -29,5 +29,6 @@
       006-bilstm_text_generation
       007-GPT2    
       
-### 6-
+### 6-Reading_comprehension
+      001-transformer_reading
       
