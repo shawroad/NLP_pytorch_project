@@ -18,6 +18,8 @@
       002-BILSTM+Attention.py
       003-CharCNN
       004-BERT_Classification
+      005-ERNIE_Classification
+      006-ALBert_Classification
       
 ### 5-Text-Generation
       001-NNLM.py	
