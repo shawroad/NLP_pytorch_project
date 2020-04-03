@@ -69,7 +69,7 @@ class DatasetIterater:
         input_data = torch.LongTensor([_[0] for _ in datas]).to(self.device)
         mask = torch.LongTensor([_[1] for _ in datas]).to(self.device)
         start = torch.LongTensor([_[2] for _ in datas]).to(self.device)
-        end = torch.LongTensor([_[2] for _ in datas]).to(self.device)
+        end = torch.LongTensor([_[3] for _ in datas]).to(self.device)
         return input_data, mask, start, end
 
     def __next__(self):
