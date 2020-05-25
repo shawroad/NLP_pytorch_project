@@ -84,6 +84,7 @@ if __name__ == '__main__':
             loss = model(batch_data, token_type_ids=None, attention_mask=batch_masks, labels=batch_tags)
             print("Epoch:{}, step:{}, loss:{}".format(epoch, i, loss))
             # gradient clipping
+            loss.backward()
             nn.utils.clip_grad_norm_(parameters=model.parameters(), max_norm=Config.clip_grad)
             optimizer.step()
         if epoch % 10 == 0:
