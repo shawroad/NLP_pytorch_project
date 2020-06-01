@@ -22,6 +22,7 @@
       004-BERT_Classification
       005-ERNIE_Classification
       006-ALBert_Classification
+      007-FastBert
       
 ### 5-Text-Generation
       001-NNLM.py	
