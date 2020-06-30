@@ -36,4 +36,17 @@
       
 ### 6-Reading_comprehension
       001-transformer_reading
+      002-BERT_MRC
+      003-BiDAF
+      004-DocQA
+      005-match_lstm
+      006-QANet
+      007-RNet
+      008-albert_mrc
+      009-roberta_mrc
+      
+### 7-NER
+      001-Bert_CRF_Ner
+      002-Bert_Softmax_Ner
+      003-BiLSTM_CRF_Ner
       
