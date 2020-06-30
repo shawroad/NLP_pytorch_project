@@ -14,6 +14,8 @@
 
 ### 3-NMT
       001-transformer_NMT
+      002-gru_seq2seq_attention
+      003-lstm_seq2seq_attention
 
 ### 4-Text-Classification
       001-TextCNN.py
