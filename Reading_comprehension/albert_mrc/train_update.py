@@ -15,10 +15,10 @@ import numpy as np
 from model import Model
 from DataLoader import DatasetIterater, build_dataset
 from config import Config
-from pytorch_pretrained_bert.optimization import BertAdam
 from rlog import _log_normal, _log_warning, _log_info, _log_error, _log_toomuch, _log_bg_blue, _log_bg_pp, _log_fg_yl, \
     _log_fg_cy, _log_black, rainbow
 from transformers import BertTokenizer
+from transformers.optimization import AdamW, get_linear_schedule_with_warmup
 import json
 
 # 随机种子
@@ -45,12 +45,11 @@ def train():
         {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}]
 
     # optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
-    # 这里我们用bertAdam优化器
+    # 这里我们用bertAdam优化器  
+    optimizer = AdamW(optimizer_grouped_parameters, lr=Config.learning_rate, correct_bias=False)  # 要重现BertAdam特定的行为，请设置correct_bias = False
+    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0.05, num_training_steps=len(train_iter) * Config.num_epochs)  # PyTorch调度程序用法如下：
 
-    optimizer = BertAdam(optimizer_grouped_parameters,
-                         lr=Config.learning_rate,
-                         warmup=0.05,
-                         t_total=len(train_iter) * Config.num_epochs)
+
 
     model.to(device)
     model.train()
@@ -75,6 +74,7 @@ def train():
 
             loss.backward()
             optimizer.step()
+            scheduler.step()
 
             time_str = datetime.datetime.now().isoformat()
             log_str = 'time:{}, epoch:{}, step:{}, loss:{:8f}, spend_time:{:6f}'.format(time_str, epoch, step, loss,
