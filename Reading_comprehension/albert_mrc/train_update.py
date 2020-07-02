@@ -73,6 +73,7 @@ def train():
                                start_positions=start_positions, end_positions=end_positions)
 
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm=20)
             optimizer.step()
             scheduler.step()
 
