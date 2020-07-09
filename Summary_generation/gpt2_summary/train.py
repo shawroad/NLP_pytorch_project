@@ -12,10 +12,6 @@ from transformers import BertTokenizer
 from transformers.modeling_gpt2 import GPT2LMHeadModel
 from torch.utils.data import DataLoader
 from transformers import modeling_gpt2
-
-
-
-
 import json
 import random
 import transformers
@@ -124,7 +120,7 @@ def train(model, train_list):
 
             # 注意：GPT2模型的forward()函数，是对于给定的context，生成一个token，而不是生成一串token
             # GPT2Model的输入为n个token_id时，输出也是n个hidden_state，使用第n个hidden_state预测第n+1个token
-            input_ids.to(Config.device)
+            input_ids = input_ids.to(Config.device)
 
             outputs = model.forward(input_ids=input_ids)
 
@@ -176,7 +172,7 @@ def evaluate(model, test_list):
     print("starting evaluating")
     with torch.no_grad():
         for batch_idx, input_ids in enumerate(test_dataloader):
-            input_ids.to(Config.device)
+            input_ids = input_ids.to(Config.device)
             outputs = model.forward(input_ids=input_ids)
             loss, accuracy = calculate_loss_and_accuracy(outputs, labels=input_ids)
 
