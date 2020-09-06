@@ -1,61 +1,38 @@
-"""
-
-@file  : model.py
-
-@author: xiaolu
-
-@time  : 2020-05-25
-
-"""
-import torch
+# -*- coding: utf-8 -*-
+# @Time    : 2020/9/4 14:12
+# @Author  : xiaolu
+# @FileName: model.py
+# @Software: PyCharm
 import torch.nn as nn
-from torch.nn import CrossEntropyLoss
-from transformers import BertModel, BertConfig
-import numpy as np
-from sklearn.metrics import f1_score, classification_report
-from config import Config
 from crf import CRF
+from transformers import BertModel, BertConfig
 
 
-class Model(nn.Module):
-    def __init__(self):
-        super(Model, self).__init__()
-        # 加载预训练模型
-        num_tag = 7
-        self.config = BertConfig.from_pretrained(Config.model_config_path)
-        self.bert = BertModel.from_pretrained(Config.model_path, config=self.config)
-        self.qa_outputs = nn.Linear(768, num_tag)   # 总共有7个标签
-        self.crf = CRF(num_tag)
-        self.loss_fct = CrossEntropyLoss()   # 计算损失
+class BertCrfForNer(nn.Module):
+    def __init__(self, num_labels):
+        super(BertCrfForNer, self).__init__()
+        # bert模型
+        self.config = BertConfig.from_pretrained('./bert_pretrain/bert_config.json')
+        self.bert = BertModel.from_pretrained('./bert_pretrain/pytorch_model.bin', config=self.config)
 
-    def forward(self, input_ids, token_type_ids=None, attention_mask=None, labels=None):
-        sequence_output, _ = self.bert(input_ids, attention_mask=attention_mask)
-        logits = self.qa_outputs(sequence_output)
-        return logits
+        # 每个token进行分类
+        self.dropout = nn.Dropout(self.config.hidden_dropout_prob)
+        self.classifier = nn.Linear(self.config.hidden_size, num_labels)
 
-    def loss_fn(self, bert_encode, output_mask, tags):
-        loss = self.crf.negative_log_loss(bert_encode, output_mask, tags)
-        return loss
+        # 送入CRF进行预测
+        self.crf = CRF(num_tags=num_labels, batch_first=True)
 
-    def predict(self, bert_encode, output_mask):
-        predicts = self.crf.get_batch_best_path(bert_encode, output_mask)
-        predicts = predicts.view(1, -1).squeeze()
-        predicts = predicts[predicts != -1]
-        return predicts
+    def forward(self, input_ids, token_type_ids=None, attention_mask=None, labels=None, input_lens=None):
+        outputs = self.bert(input_ids=input_ids,
+                            attention_mask=attention_mask,
+                            token_type_ids=token_type_ids)
+        sequence_output = outputs[0]   # B, L, H
 
-    def acc_f1(self, y_pred, y_true):
-        y_pred = y_pred.numpy()
-        y_true = y_true.numpy()
-        f1 = f1_score(y_true, y_pred, average="macro")
-        correct = np.sum((y_true==y_pred).astype(int))
-        acc = correct/y_pred.shape[0]
-        return acc, f1
+        sequence_output = self.dropout(sequence_output)
+        logits = self.classifier(sequence_output)
 
-    def class_report(self, y_pred, y_true):
-        y_true = y_true.numpy()
-        y_pred = y_pred.numpy()
-        classify_report = classification_report(y_true, y_pred)
-        print('\n\nclassify_report:\n', classify_report)
-
-
-
+        outputs = (logits,)
+        if labels is not None:
+            loss = self.crf(emissions=logits, tags=labels, mask=attention_mask)
+            outputs = (-1*loss,) + outputs
+        return outputs # (loss), scores
