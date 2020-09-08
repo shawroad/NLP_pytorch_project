@@ -1,0 +1,7 @@
+portabl oper system 
+code optim for space effici 
+parallel algorithm 
+distribut comput structur and algorithm 
+appli stochast process 
+perform evalu and model of comput system 
+parallel processor in inform retriev 

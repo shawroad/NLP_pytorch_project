@@ -1,1 +1,0 @@
-这里跟bert模型一模一样。 只是加载的权重不一样。  权重下载地址: https://github.com/ymcui/Chinese-BERT-wwm
