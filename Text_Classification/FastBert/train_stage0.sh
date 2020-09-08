@@ -1,0 +1,12 @@
+python3 train.py \
+    --model_config_file='config/fastbert_cls.json' \
+    --save_model_path='save_model/fastbert_test' \
+    --run_mode=train \
+    --train_stage=0 \
+    --train_data='./data/tcl/train.tsv' \
+    --eval_data='./data/tcl/dev.tsv' \
+    --epochs=8 \
+    --batch_size=60 \
+    --data_load_num_workers=2 \
+    --gpu_ids='0,1' \
+    --debug_break=0
