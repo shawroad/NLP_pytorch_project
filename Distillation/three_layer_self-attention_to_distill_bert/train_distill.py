@@ -21,12 +21,25 @@ from Distill_Model import Model
 from config import set_args
 
 
-class InputFeatures(object):
-    def __init__(self, input_ids, input_mask, segment_ids, label_id):
+class InputFeatures:
+    def __init__(self, input_ids, input_mask, segment_ids, label_id, scores=None):
         self.input_ids = input_ids
         self.input_mask = input_mask
         self.segment_ids = segment_ids
         self.label_id = label_id
+        self.scores = scores
+
+    def __str__(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        s = ""
+        s += "input_ids: %s" % (self.input_ids)
+        s += ", input_mask: %s" % (self.input_mask)
+        s += ", segment_ids: %s" % (self.segment_ids)
+        s += ", label_id: %s" % (self.label_id)
+        s += ", scores: %s" % (self.scores)
+        return s
 
 
 def set_seed(args):
@@ -44,8 +57,9 @@ def evaluate(epoch):
     eval_input_mask = torch.tensor([f.input_mask for f in eval_features], dtype=torch.long)
     eval_segment_ids = torch.tensor([f.segment_ids for f in eval_features], dtype=torch.long)
     eval_label_ids = torch.tensor([f.label_id for f in eval_features], dtype=torch.long)
+    eval_scores = torch.tensor([f.scores for f in eval_features], dtype=torch.float)
 
-    eval_data = TensorDataset(eval_input_ids, eval_input_mask, eval_segment_ids, eval_label_ids)
+    eval_data = TensorDataset(eval_input_ids, eval_input_mask, eval_segment_ids, eval_label_ids, eval_scores)
     eval_sampler = SequentialSampler(eval_data)
     eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size)
 
@@ -101,13 +115,15 @@ if __name__ == '__main__':
     train_batch_size = int(args.train_batch_size / args.gradient_accumulation_steps)
 
     # 加载训练集
-    with gzip.open(args.train_features_path, 'rb') as f:
+    # with gzip.open(args.train_features_path, 'rb') as f:
+    #     train_features = pickle.load(f)
+    with gzip.open('train_features.pkl.gz', 'rb') as f:
         train_features = pickle.load(f)
 
-    with gzip.open(args.eval_features_path, 'rb') as f:
-        eval_features = pickle.load(f)
+    random.shuffle(train_features)
+    eval_features = train_features[:500]
+    train_features = train_features[500:]
 
-        # Prepare Optimizer
     num_train_steps = int(
         len(train_features) / args.train_batch_size / args.gradient_accumulation_steps * args.num_train_epochs)
 
@@ -142,12 +158,10 @@ if __name__ == '__main__':
         all_input_mask = torch.tensor([f.input_mask for f in train_features], dtype=torch.long)
         all_segment_ids = torch.tensor([f.segment_ids for f in train_features], dtype=torch.long)
         all_label_ids = torch.tensor([f.label_id for f in train_features], dtype=torch.long)
-        # all_scores = torch.tensor([f.scores for f in train_features], dtype=torch.float)
+        all_scores = torch.tensor([f.scores for f in train_features], dtype=torch.float)
+        train_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids, all_scores)
 
-
-        train_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
         model.train()
-
         for epoch in range(args.num_train_epochs):
             train_dataloader = DataLoader(train_data, shuffle=True, batch_size=args.train_batch_size)
             for step, batch in enumerate(train_dataloader):
@@ -157,13 +171,11 @@ if __name__ == '__main__':
                 input_ids, input_mask, segment_ids, labels_ids, scores = batch
                 logits = model(input_ids, input_mask, segment_ids)
                 loss = compute_loss(logits, labels_ids, scores)
-
                 if args.gradient_accumulation_steps > 1:
                     loss = loss / args.gradient_accumulation_steps
 
-                print('epoch:{}, step:{}, loss:{:10f}, time_cost:{:10f}'.format(epoch, step, loss, time.time()-start_time))
+                print('<distilling> epoch:{}, step:{}, loss:{:10f}, time_cost:{:10f}'.format(epoch, step, loss, time.time()-start_time))
                 loss.backward()
-
                 # nn.utils.clip_grad_norm_(model.parameters(), max_norm=20, norm_type=2)
 
                 if (step + 1) % args.gradient_accumulation_steps == 0:
@@ -173,7 +185,6 @@ if __name__ == '__main__':
                     global_step += 1
 
                 test_loss, test_acc = evaluate(epoch)
-
 
             # 一个epoch跑完 然后进行验证
             os.makedirs(args.output_dir, exist_ok=True)
