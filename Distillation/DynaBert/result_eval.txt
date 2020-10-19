@@ -1,0 +1,5 @@
+epoch:0, eval_loss: 0.4825935121625662, eval_accuracy:0.764
+epoch:1, eval_loss: 0.4638979285955429, eval_accuracy:0.77
+epoch:2, eval_loss: 0.4434062223881483, eval_accuracy:0.79
+epoch:3, eval_loss: 0.4367076372727752, eval_accuracy:0.79
+epoch:4, eval_loss: 0.524292066693306, eval_accuracy:0.75
