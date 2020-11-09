@@ -73,12 +73,10 @@ def evaluate(epoch):
     for input_ids, bigram, trigram, seq_len, label in tqdm(eval_dataloader, desc='Evaluation'):
         step += 1
         input_ids = input_ids.cuda()
-        bigram = bigram.cuda()
-        trigram = trigram.cuda()
         seq_len = seq_len.cuda()
         label = label.cuda()
         with torch.no_grad():
-            logits = model(input_ids, bigram, trigram, seq_len, label)
+            logits = model(input_ids, seq_len, label)
             loss = loss_fnt(logits, label)
         eval_loss += loss.mean().item()  # 统计一个batch的损失 一个累加下去
         labels = label.data.cpu().numpy()
