@@ -1,0 +1,1 @@
+longformer中文版预训练模型   https://github.com/SCHENLIU/longformer-chinese
