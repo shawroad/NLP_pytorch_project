@@ -27,33 +27,6 @@ def set_args():
 
     parser.add_argument('--hidden_size', type=int, default=200, help='lstm hidden dim')
     parser.add_argument("--save_model", default="./save_model", type=str)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # parser.add_argument('--device', default='2', type=str, help='code will operate in this gpu')
-    # num_train_epochs
-    # parser.add_argument('--num_train_epochs', default=20, type=str, help='code will operate in this gpu')
-    # parser.add_argument('--seed', type=int, default=42, help="random seed for initialization")
-    # parser.add_argument("--vocab_file", default="./roberta_pretrain/vocab.txt", type=str,
-    #                     help="Pretrained config name or path if not the same as model_name")
     args = parser.parse_args()
     return args
 
