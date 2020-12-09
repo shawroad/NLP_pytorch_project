@@ -23,6 +23,9 @@ if __name__ == '__main__':
     num_classes = len(id2predicate)
     s_model = s_model(len(char2id) + 2, args.char_size, args.hidden_size)
     po_model = po_model(len(char2id) + 2, args.char_size, args.hidden_size, 49)
+   
+    s_model.load_state_dict(torch.load('./save_model/s_0.bin'))
+    po_model.load_state_dict(torch.load('./save_model/po_0.bin'))
 
     text_in = '周杰伦出演了电影不能说的秘密。我当时是在电影院看的'
     t_s = [char2id.get(i, 1) for i in text_in]
