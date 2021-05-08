@@ -102,9 +102,9 @@ if __name__ == "__main__":
     train_data = LCQMC_Dataset(train_file, vocab_file, args.max_char_len)
     train_loader = DataLoader(train_data, shuffle=True, batch_size=args.train_batch_size)
 
-    # print('加载验证集ing...')
-    # dev_data = LCQMC_Dataset(valid_file, vocab_file, args.max_char_len)
-    # dev_loader = DataLoader(dev_data, shuffle=True, batch_size=args.dev_batch_size)
+    print('加载验证集ing...')
+    dev_data = LCQMC_Dataset(valid_file, vocab_file, args.max_char_len)
+    dev_loader = DataLoader(dev_data, shuffle=True, batch_size=args.dev_batch_size)
 
     print('加载词向量ing...')
     embeddings = load_embeddings(embeddings_file)
