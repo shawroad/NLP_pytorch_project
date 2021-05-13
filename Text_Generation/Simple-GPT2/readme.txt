@@ -1,0 +1,4 @@
+- step1: 将你的语料放在data下
+- step2: 执行data_process.py,建立词表，并将语料转为对应的数字序列
+- step3: 执行train.py，开始进行模型的训练，最终训练好的模型保存在output中
+- step4: 执行inference.py,进行预测。 这里采用的是随机解码中的top-k方式。
