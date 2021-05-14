@@ -189,7 +189,7 @@ if __name__ == '__main__':
     train_texts = []
     for name, data in datasets.items():
         a_texts, b_texts, labels = split_data(data)
-        all_weights.append(len(data))   # 每个样本的长度: 句子1+句子2+标签 的总长度
+        all_weights.append(len(data))   # 存[训练集的个数、测试集的个数、验证集的个数]
         all_texts.append((a_texts, b_texts))
         all_labels.append(labels)
         train_texts.extend(a_texts)
