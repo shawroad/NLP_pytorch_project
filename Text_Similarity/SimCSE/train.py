@@ -17,6 +17,7 @@ import torch.nn.functional as F
 from model import Model
 from torch.utils.tensorboard import SummaryWriter
 from utils import compute_corrcoef, l2_normalize
+from einops import repeat, rearrange
 
 
 def load_data(path):
@@ -91,12 +92,19 @@ def collate_func(batch_data):
 def simcse_loss(y_pred):
     """用于SimCSE训练的loss
     """
+    # torch.Size([12, 768])
     # 构造标签
-    idxs = torch.arange(0, y_pred.size(0))  # [b]
+    idxs = torch.arange(0, y_pred.size(0))  # [0, 1, 2, ..., batch_size-1]
+    # print(idxs)   # tensor([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11])
 
     idxs_1 = idxs[None, :]  # [1,b]
+    # print(idxs_1)   # tensor([[ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11]])
+
     idxs_2 = (idxs + 1 - idxs % 2 * 2)[:, None]  # [b,1]    4 + 1 = 5   7 + 1 - 1 * 2 = 6
+    # print(idxs_2)   # tensor([[ 1], [ 0], [ 3], [ 2], [ 5], [ 4], [ 7], [ 6], [ 9], [ 8], [11], [10]])
+
     y_true = idxs_1 == idxs_2
+    # print(y_true)
 
     if torch.cuda.is_available():
         y_true = torch.tensor(y_true, dtype=torch.float).cuda()
@@ -105,14 +113,19 @@ def simcse_loss(y_pred):
 
     # 计算相似度
     y_pred = F.normalize(y_pred, dim=1, p=2)
-    similarities = torch.matmul(y_pred, y_pred.transpose(0, 1))  # [b,d] * [b.d] -> [b,1]
+    similarities = torch.matmul(y_pred, y_pred.transpose(0, 1))  # [b,d] * [d, b] -> [b,b]
+    # print(similarities.size())   # [batch_size, batch_size]
 
     if torch.cuda.is_available():
         similarities = similarities - torch.eye(y_pred.size(0)).cuda() * 1e12
     else:
-        similarities = similarities - torch.eye(y_pred.size(0)) * 1e12
+        similarities = similarities - torch.eye(y_pred.size(0)) * 1e12   # 将对角线上的值变为负无穷大
 
     similarities = similarities * 20
+
+    # print(similarities.size())    # torch.Size([12, 12])
+    # print(y_true.size())   # torch.Size([12, 12])  注意力因子的矩阵
+
     loss = loss_func(similarities, y_true)
     return loss
 
@@ -137,7 +150,6 @@ def evaluate():
             else:
                 input_ids = eval_batch["input_ids"]
                 attention_mask_ids = eval_batch["attention_mask_ids"]
-
 
             with torch.no_grad():
                 eval_encodings = model(input_ids=input_ids, attention_mask=attention_mask_ids)
@@ -191,9 +203,9 @@ if __name__ == '__main__':
         a_texts, b_texts, labels = split_data(data)
         all_weights.append(len(data))   # 存[训练集的个数、测试集的个数、验证集的个数]
         all_texts.append((a_texts, b_texts))
-        all_labels.append(labels)
-        train_texts.extend(a_texts)
-        train_texts.extend(b_texts)
+        all_labels.append(labels)    # 将训练集 测试集 验证集的label放在一个列表中 [[训练集label], [测试集label], [验证集label]]
+        train_texts.extend(a_texts)  # 将所有的样本的第一条数据放在train_texts
+        train_texts.extend(b_texts)  # 将所有样本的的第二条数据放在train_texts
 
     np.random.shuffle(train_texts)
     train_texts = train_texts[:10000]
@@ -239,13 +251,23 @@ if __name__ == '__main__':
         model.train()
         for step, batch in enumerate(train_data_loader):
             input_ids = batch["input_ids"]
+            input_ids = repeat(input_ids, 'b l -> b new_axis l', new_axis=2)
+            input_ids = rearrange(input_ids, 'b x l -> (b x) l')
+
             attention_mask_ids = batch["attention_mask_ids"]
+            attention_mask_ids = repeat(attention_mask_ids, 'b l -> b new_axis l', new_axis=2)
+            attention_mask_ids = rearrange(attention_mask_ids, 'b x l -> (b x) l')
+
+            # print(input_ids.size())    # torch.Size([24, 22])   # 2 * batch_size, max_len
+            # print(attention_mask_ids.size())    # torch.Size([24, 22])   # 2 * batch_size, max_len
 
             if torch.cuda.is_available():
                 input_ids = input_ids.cuda()
                 attention_mask_ids = attention_mask_ids.cuda()
 
             outputs = model(input_ids, attention_mask_ids, encoder_type='fist-last-avg')
+            # print(outputs.size())   # torch.Size([12, 768])
+
             loss = simcse_loss(outputs)
             tr_loss += loss.item()
 
@@ -285,10 +307,3 @@ if __name__ == '__main__':
         model_to_save.save_pretrained(output_dir)
         # 清空cuda缓存
         torch.cuda.empty_cache()
-
-
-
-
-
-
-
