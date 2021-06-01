@@ -4,12 +4,12 @@
 @email  : luxiaonlp@163.com
 @time   : 2021-05-27
 """
-
 import os
 import pickle
 import random
 import timeit
 import torch
+import json
 import numpy as np
 from tqdm import tqdm
 from config import set_args
@@ -66,7 +66,6 @@ def evaluate(args, model, tokenizer, prefix="dev", step=0):
         for i, example_index in enumerate(example_indices):   # 遍历当前batch中的每个样本的原始样本
             eval_feature = features[example_index.item()]   # 取出当前样本在那个原始样本
             unique_id = int(eval_feature.unique_id)   # 当前样本的id
-
             output = [to_list(output[i]) for output in outputs]
             start_logits, end_logits = output[:2]
             result = SquadResult(unique_id, start_logits, end_logits)
@@ -209,22 +208,15 @@ def train(args, train_dataset, model, tokenizer):
 
             if (step + 1) % args.gradient_accumulation_steps == 0:
                 torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
-
                 optimizer.step()
                 scheduler.step()  # Update learning rate schedule
                 model.zero_grad()
                 global_step += 1
 
-                if args.logging_steps > 0 and global_step % args.logging_steps == 0:
-                    print('开始验证。。。')
-                    results = evaluate(args, model, tokenizer, prefix='dev', step=global_step)
-
-                    # res_baidu = baidu_evaluate(f'{args.data_dir}/{args.predict_file}', f'{args.output_dir}/predictions_dev_{global_step}.json')
-                    # if res_baidu['F1'] >= args.best_val_f1:
-                    #     args.best_val_f1 = res_baidu['F1']
-                    #     args.best_val_step = global_step
-
             if args.save_steps > 0 and global_step % args.save_steps == 0:
+                results = evaluate(args, model, tokenizer, prefix='dev', step=global_step)
+                json.dump(results, open('result.json', 'a+', encoding='utf8'))
+                
                 output_dir = os.path.join(args.output_dir, 'checkpoint-{}'.format(global_step))
                 if not os.path.exists(output_dir):
                     os.makedirs(output_dir)

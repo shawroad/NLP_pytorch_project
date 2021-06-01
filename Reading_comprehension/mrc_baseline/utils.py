@@ -4,11 +4,14 @@
 @email  : luxiaonlp@163.com
 @time   : 2021-05-27
 """
+import os
 import torch
 import json
 from tqdm import tqdm
 import numpy as np
 from config import set_args
+from functools import partial
+from multiprocessing import Pool, cpu_count
 from transformers.data import DataProcessor
 from torch.utils.data import TensorDataset
 from transformers.models.bert.tokenization_bert import whitespace_tokenize

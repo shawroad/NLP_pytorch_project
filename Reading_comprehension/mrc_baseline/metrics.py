@@ -145,10 +145,6 @@ def compute_predictions_logits(all_examples, all_features, all_results, n_best_s
     :param tokenizer:
     :return:
     '''
-    print(all_examples)
-    print(len(all_examples))
-    exit()
-
     print("Writing predictions to: %s" % (output_prediction_file))
     print("Writing nbest to: %s" % (output_nbest_file))
 
@@ -169,7 +165,6 @@ def compute_predictions_logits(all_examples, all_features, all_results, n_best_s
     scores_diff_json = collections.OrderedDict()
 
     for example_index, example in enumerate(all_examples):
-        print(example_index)
         # 按原始样本遍历   先取出当前这个样本对应的几个features
         features = example_index_to_features[example_index]
 
@@ -317,6 +312,7 @@ def compute_predictions_logits(all_examples, all_features, all_results, n_best_s
         if not version_2_with_negative:
             all_predictions[example.qas_id] = nbest_json[0]['text']
         else:
+            # 每个问题预测为空的得分    空的得分减去有答案的最高分
             score_diff = score_null - best_non_null_entry.start_logit - best_non_null_entry.end_logit
             scores_diff_json[example.qas_id] = score_diff
             if score_diff > null_score_diff_threshold:
