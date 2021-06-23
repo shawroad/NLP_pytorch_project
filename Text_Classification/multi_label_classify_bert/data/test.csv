@@ -1,0 +1,12 @@
+question_id,question_title,question_detail
+0,2012 年 10 月 7 日司马南在海南大学做一个关于「理性与情怀」的演讲，被学生扔鞋，怎么回事？,
+1,日本人是怎么看待中国人拍的抗日剧情？,抗日剧貌似都把中国人神化，把日本人描述的那么笨？那日本观众到中国看电视看到中国人拍的这些剧，什么反应呢？
+2,如何看待竹类家居家具设计？,有哪些优秀案例作品？比如工艺上的创新，结构方面的创新？
+3,假如《陆小凤传奇》小说结局是悲剧会不会更多人喜欢？, 《陆小凤传奇》原著小说的结局是大团圆结局，陆小凤与沙曼归隐了，为什么古龙不写悲情的结局，如果结局是；花满楼变成最后的boss，西门吹雪死了，司空摘星断了条手臂，朱停坐牢了；陆小凤逃离中原，去到了西域，开始了他充满传奇色彩的下半生。这样结局会不会更多读者喜欢呢？   这样的结局，是否可以体现出社会的冷漠，人心的险恶  大家有没有看过郭敬明的小说，里面大多的结局就是这样的，友情变得很不堪，主角带着无限惆怅离开了本来的地方，几个最好的朋友要么死了，要么坐牢了，自杀了。。。。  而我提出这样的结局预想，正是被这种结局方式所刺激的，或许，到了最后紧急的关头，什么友情，友谊都会变得不值一提，这就是我觉得陆小凤传奇最后会变悲剧结局的原因
+4,如何看待日本警察逮捕中國漫畫漢化組成員？,上周五（13日），負責運送「週刊少年JUMP」的貨運公司員工日高武久，以及三名中國留學生，因為涉嫌散佈盜版漫畫，遭到日本京都府警察逮捕。這件事情起初沒有引起多大關注，網友的反應多半是「反正還有別人可以掃圖」，漢化組也彷彿沒事一樣繼續發圖－－然後，就在昨天（18日）又有兩個中國留學生被逮捕。
+5,［你为什么而活着？］我是一个16岁的高三学生，想的很多，高一开始每天都被活着有什么意义这种问题折磨。？,人生应该怎么度过，难道就应该是读书、考大学，然后工作、挣钱，然后买车、买房，然后娶妻、生子，然后养家、糊口，然后，到老，退休，然后死去、烧掉？人生如果注定这样，那我觉得活着没什么意思，对我来说也没什么动力。不是说我想寻死，活着还是比死了好，我只是想找到我活着是为了什么，我问过很多人，例如班主任，某果汁店老板，同学朋友，甚至爸妈。有人说是为了身边的人，有人说，世世代代都是这么活过来的，有人说，是为了享乐。而这些，好像都不足以成为我为之而活的理由。我是一个很客观的人，能接受各种看法并思考。（不要跟我扯什么我这个年龄应该好好读书之类的，我从来不是一个别人干嘛我就会想都不想跟着干嘛的人_(:з」∠)_）。希望有人能看到。
+6,杨洋身上有哪些值得你学习令你佩服的东西？,似乎有相同问题，附链接指路杨洋有哪些正能量的语录？  http://www.zhihu.com/question/53053250?utm_source=com.miui.notes&amp;utm_medium=social  （分享自知乎网） 可以从杨洋身上学到什么？ http://www.zhihu.com/question/56941924?utm_source=com.miui.notes&amp;utm_medium=social （分享自知乎网） 问题关闭_(:з」∠)_邀请了那么多人骚瑞，附特色社会主义帅哥照
+7,基于Bluetooth beacon的技术，蓝牙4.0是否可以实现室内定位？精准度能达到多少？需要对定位环境布署外设吗？,因为最近在酝酿移动互联网创业，特别是基于indoor positioning system的O2O模式的研究，现已有Idea和商业模式，包括产品思路。但对室内定位的技术商业化前景有一些不确定，想求助知乎众神，感谢。  PS：如知友也有相同梦想，亦可结伴上路！我把email留下，诚盼交流。  miao_dl@yahoo.com
+8,如何看待SMLZ被挂牌？, 据传是在omg续约被挂牌？
+9,如何评价  Android 正式移除了 Dalvik 并默认使用 ART？," 来源：  http://www.apkbus.com/portal.php?mod=view&amp;aid=9789    就在昨晚，AOSP 代码的 master 分支上的提交显示 Dalvik 被开除，然后 ART 接替了默认的位置。这个变更是以提交 98553 和 98618 被合并的形式展现的。  前者负责把 Dalvik 从 AOSP 的 master 分支中剔除，而后者则将默认的运行时环境切换到了 ART。   具体的变更如下：   Dalvik is dead, long live Dalvik! DO NOT MERGE croot cd libcore repo start dalvik-is-dead-long-live-dalvik . repo sync -c . git rm -r libdvm git add JavaLibrary.mk (after removing libdvm references, adding explict core-libart references) git add Docs.mk (after replacing references to libdvm with libart) git add benchmarks/Android.mk (after adding explict core-libart references) git add Android.mk (after removing dalvik-host target) git commit -a -m ‘Dalvik is dead, long live Dalvik! DO NOT MERGE’  Switch from core to core-libart  "
+10,怎么摆脱讨厌的同事？, 有一个新来的别的部门同事，一直问问我题，开始我还耐心解答，后来发现非常困扰，而且还影响我工作，拒绝了几次，还一直烦我，还试着和我交流做朋友，可是我一见她就烦，怎么摆脱。
