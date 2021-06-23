@@ -9,6 +9,7 @@ import pandas as pd
 import torch.nn as nn
 from tqdm import tqdm
 from model import Model
+# from model2 import Model
 from config import set_args
 from utils import AverageMeter
 from transformers.models.bert import BertTokenizer
