@@ -18,7 +18,7 @@ class Model(nn.Module):
         super(Model, self).__init__()
         config = BertConfig.from_pretrained(args.bert_config, output_hidden_states=True)
         self.bert = BertModel.from_pretrained(args.bert_pretrain, config=config)
-        self.fc = nn.Linear(768, args.n_classes)
+        self.fc = nn.Linear(768, args.num_classes)
 
     def forward(self, input_ids, attention_mask):
         output = self.bert(input_ids, attention_mask)  # [batch, seqlen, hidden_size]
