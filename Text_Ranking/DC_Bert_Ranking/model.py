@@ -37,7 +37,7 @@ class Model(nn.Module):
                                                              attention_mask=ques_input_mask)
 
         # print(ques_seq_output.size())    # torch.Size([2, 61, 768])
-        context_seq_output, context_cls_output = self.ques_encoder(input_ids=context_input_ids,
+        context_seq_output, context_cls_output = self.context_encoder(input_ids=context_input_ids,
                                                                    token_type_ids=context_segment_ids,
                                                                    attention_mask=context_input_mask)
         # print(context_seq_output.size())   # torch.Size([2, 441, 768])
