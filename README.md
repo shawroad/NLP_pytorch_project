@@ -47,20 +47,47 @@
       - [5. all_layer_out_concat: 从名字上就可以看出，本项目是将文本经过bert-style模型进行编码，然后将每层的cls向量拿出来，进行一个注意力计算，然后进行分类。](#5-all_layer_out_concat-从名字上就可以看出本项目是将文本经过bert-style模型进行编码然后将每层的cls向量拿出来进行一个注意力计算然后进行分类)
       - [6. bert+bceloss+average_checkpoint: 该项目将分类任务的损失函数改成了BCELoss，另外，加入的权重平均(将多个checkpoint进行平均)](#6-bertbcelossaverage_checkpoint-该项目将分类任务的损失函数改成了bceloss另外加入的权重平均将多个checkpoint进行平均)
       - [7. capsule_text_classification: GRU+Capsule进行文本分类](#7-capsule_text_classification-grucapsule进行文本分类)
-      - [8. longformer_classification](#8-longformer_classification)
-      - [9. multi_label_classify_bert](#9-multi_label_classify_bert)
-      - [10. roberta_classification](#10-roberta_classification)
-      - [11. transformer_xl](#11-transformer_xl)
-      - [12. wobert+focal_loss](#12-wobertfocal_loss)
-      - [13. TextCNN](#13-textcnn)
-      - [14. BILSTM+Attention](#14-bilstmattention)
+      - [8. longformer_classification: 使用预训练模型longformer进行文本分类。对于长文本的分类，可以试试这个模型。](#8-longformer_classification-使用预训练模型longformer进行文本分类对于长文本的分类可以试试这个模型)
+      - [9. multi_label_classify_bert: 使用bert模型进行多标签分类。里面包含三个模型: bert(model.py)、bert后两层池化(model2.py)、bert+TextCNN(model3.py)。](#9-multi_label_classify_bert-使用bert模型进行多标签分类里面包含三个模型-bertmodelpybert后两层池化model2pyberttextcnnmodel3py)
+      - [10. roberta_classification: 使用roberta预训练模型进行文本分类。](#10-roberta_classification-使用roberta预训练模型进行文本分类)
+      - [11. transformer_xl: 直接使用transformer_xl进行文本分类，对于长文本分类，可以试试此模型。](#11-transformer_xl-直接使用transformer_xl进行文本分类对于长文本分类可以试试此模型)
+      - [12. wobert+focal_loss: wobert预训练模型有苏神提供，在分类任务中加入了focal loss解决类别不平衡的问题。](#12-wobertfocal_loss-wobert预训练模型有苏神提供在分类任务中加入了focal-loss解决类别不平衡的问题)
+      - [13. TextCNN: 对文本进行不同尺度的卷积，然后拼接进行文本分类。](#13-textcnn-对文本进行不同尺度的卷积然后拼接进行文本分类)
+      - [14. BILSTM+Attention: 双向的LSTM网络加普通的注意力进行文本分类。](#14-bilstmattention-双向的lstm网络加普通的注意力进行文本分类)
   - [Text_Clustering](#text_clustering)
+      - [1. LDA聚类](#1-lda聚类)
+      - [2. DBSCAN](#2-dbscan)
+      - [3. Kmeans](#3-kmeans)
   - [Text_Corrector](#text_corrector)
+      - [1. bert_for_correction: 只是简单的尝试，在对应的语料上进行了再训练，输入一个有错别字的句子，然后对每个token的编码向量进行分类。](#1-bert_for_correction-只是简单的尝试在对应的语料上进行了再训练输入一个有错别字的句子然后对每个token的编码向量进行分类)
   - [Text_Generation](#text_generation)
+      - [1. GPT2_SummaryGen: 使用GPT2进行摘要的生成](#1-gpt2_summarygen-使用gpt2进行摘要的生成)
+      - [2. GPT2_TitleGen: 文章标题的生成](#2-gpt2_titlegen-文章标题的生成)
+      - [3. Simple-GPT2: 自己实现的GPT2模型](#3-simple-gpt2-自己实现的gpt2模型)
   - [Text_Ranking](#text_ranking)
+      - [1. BM25: 计算query与所有待排序文本的BM25值，然后根据这个值进行排序。](#1-bm25-计算query与所有待排序文本的bm25值然后根据这个值进行排序)
+      - [2. DC_Bert_Ranking: 双塔+交互。首先对query和context分别进行编码，此处的权重不共享，然后将query和context的编码混合，再通过几层交互的transformer-encoder。](#2-dc_bert_ranking-双塔交互首先对query和context分别进行编码此处的权重不共享然后将query和context的编码混合再通过几层交互的transformer-encoder)
+      - [3. DPR_Ranking:Facebook的文本排序模型](#3-dpr_rankingfacebook的文本排序模型)
+      - [4. MT_Ranking: 用bert-style模型进行编码，然后用cls进行分类，按正样本的得分排序](#4-mt_ranking-用bert-style模型进行编码然后用cls进行分类按正样本的得分排序)
+      - [5. ReRank: 含模型蒸馏](#5-rerank-含模型蒸馏)
   - [Text_Similarity](#text_similarity)
+      - [1. ABCNN: 首先对两个句子进行词嵌入，然后进行池化，得到两个句子的向量，接着计算两个向量的差值，最后对这个差值向量进行不同尺度的卷积，然后进行分类。](#1-abcnn-首先对两个句子进行词嵌入然后进行池化得到两个句子的向量接着计算两个向量的差值最后对这个差值向量进行不同尺度的卷积然后进行分类)
+      - [2. BiMPM: 该模型分为四部分: 词嵌入、上下文编码(bilstm)、四种Matching、Aggregation Layer。](#2-bimpm-该模型分为四部分-词嵌入上下文编码bilstm四种matchingaggregation-layer)
+      - [3. DecomposableAttention:这篇论文的核心就是alignment，即词与词的对应关系，文中的alignment用在了两个地方，一个attend部分，是用来计算两个句子之间的attention关系，另一个是compare部分，对两个句子之间的词进行比较，每次的处理都是以词为单位的，最后用前馈神经网络去做预测。很明显可以看到，这篇文章提到的模型并没有使用到词在句子中的时序关系，更多的是强调两句话的词之间的对应关系（alignment）](#3-decomposableattention这篇论文的核心就是alignment即词与词的对应关系文中的alignment用在了两个地方一个attend部分是用来计算两个句子之间的attention关系另一个是compare部分对两个句子之间的词进行比较每次的处理都是以词为单位的最后用前馈神经网络去做预测很明显可以看到这篇文章提到的模型并没有使用到词在句子中的时序关系更多的是强调两句话的词之间的对应关系alignment)
+      - [4. ESIM: 短文本匹配利器。ESIM 牛逼在它的 inter-sentence attention，就是代码中的 soft_align_attention，这一步中让要比较的两句话产生了交互。以前类似 Siamese 网络的结构，往往中间都没有交互，只是在最后一层求个余弦距离或者其他距离。](#4-esim-短文本匹配利器esim-牛逼在它的-inter-sentence-attention就是代码中的-soft_align_attention这一步中让要比较的两句话产生了交互以前类似-siamese-网络的结构往往中间都没有交互只是在最后一层求个余弦距离或者其他距离)
+      - [5. RE2: RE2 这个名称来源于该网络三个重要部分的合体：Residual vectors；Embedding vectors；Encoded vectors。](#5-re2-re2-这个名称来源于该网络三个重要部分的合体residual-vectorsembedding-vectorsencoded-vectors)
+      - [6. SiaGRU: 双塔结构，对两个sentence分别用GRU编码，然后计算两个句子编码向量的差值，最后用这个差值向量进行分类。](#6-siagru-双塔结构对两个sentence分别用gru编码然后计算两个句子编码向量的差值最后用这个差值向量进行分类)
+      - [7. SimCSE: 对比学习，技巧:不同的样本不同的Dropout](#7-simcse-对比学习技巧不同的样本不同的dropout)
+      - [8. BM25: 直接计算两个文本的BM25值，代表其相似程度。](#8-bm25-直接计算两个文本的bm25值代表其相似程度)
+      - [9. TF_IDF: 直接计算两个文本的TF_IDF值，代表其相似程度。](#9-tf_idf-直接计算两个文本的tf_idf值代表其相似程度)
   - [data_augmentation](#data_augmentation)
-  - [relation_extraction](#relation_extraction)# NLP_pytorch_project
+      - [1. eda: 使用nlpcda工具包进行数据增广。如: 等价实体替换、随机同义词替换、随机删除字符、位置交换、同音词替换。](#1-eda-使用nlpcda工具包进行数据增广如-等价实体替换随机同义词替换随机删除字符位置交换同音词替换)
+      - [2. 回译-百度: 使用百度翻译进行文本的回译。](#2-回译-百度-使用百度翻译进行文本的回译)
+      - [3. 回译-google: 使用google翻译进行文本的回译。](#3-回译-google-使用google翻译进行文本的回译)
+  - [relation_extraction](#relation_extraction)
+      - [1. lstm_cnn_information_extract:  lstm+cnn](#1-lstm_cnn_information_extract--lstmcnn)
+      - [2. relation_classification:  关系分类， bilstm+普通注意力](#2-relation_classification--关系分类-bilstm普通注意力)
+# NLP_pytorch_project
 
 ## Chatbot 
 
@@ -228,36 +255,123 @@
 #### 7. capsule_text_classification: GRU+Capsule进行文本分类
 - python train.py   &emsp;  # 模型训练
 
-#### 8. longformer_classification
+#### 8. longformer_classification: 使用预训练模型longformer进行文本分类。对于长文本的分类，可以试试这个模型。
+- python train.py   &emsp;  # 模型训练
 
-#### 9. multi_label_classify_bert
+#### 9. multi_label_classify_bert: 使用bert模型进行多标签分类。里面包含三个模型: bert(model.py)、bert后两层池化(model2.py)、bert+TextCNN(model3.py)。
+- python train.py  &emsp;  # 模型训练
+- python inference.py  &emsp; # 模型预测
+
+#### 10. roberta_classification: 使用roberta预训练模型进行文本分类。
+- python train.py  &emsp;  # 模型训练
+
+#### 11. transformer_xl: 直接使用transformer_xl进行文本分类，对于长文本分类，可以试试此模型。
+- python train.py  &emsp;  # 模型训练
+
+#### 12. wobert+focal_loss: wobert预训练模型有苏神提供，在分类任务中加入了focal loss解决类别不平衡的问题。
+- python run_classify.py   &emsp; # 模型训练
 
 
-#### 10. roberta_classification
+#### 13. TextCNN: 对文本进行不同尺度的卷积，然后拼接进行文本分类。
+- python 001-TextCNN.py &emsp;  # 模型训练
 
-
-#### 11. transformer_xl
-
-#### 12. wobert+focal_loss
-
-
-#### 13. TextCNN
-
-#### 14. BILSTM+Attention
-
+#### 14. BILSTM+Attention: 双向的LSTM网络加普通的注意力进行文本分类。
+- python 002-BILSTM+Attention.py  &emsp;  # 模型训练
 
 
 ## Text_Clustering
+#### 1. LDA聚类
+- python train_LDA_cluster.py  &emsp; # 聚类
+
+#### 2. DBSCAN
+- python train_dbscan_cluster.py   &emsp; # 聚类
+
+#### 3. Kmeans
+- python train_kmeans_cluster.py   &emsp; # 聚类
 
 ## Text_Corrector
+#### 1. bert_for_correction: 只是简单的尝试，在对应的语料上进行了再训练，输入一个有错别字的句子，然后对每个token的编码向量进行分类。
+- python run_pretrain_bert.py  &emsp; # 再训练
+- bert_corrector.py   &emsp; # 纠错
 
 ## Text_Generation
+#### 1. GPT2_SummaryGen: 使用GPT2进行摘要的生成
+- python train.py  &emsp; # 模型训练
+- python inferface.py  &emsp; # 模型推理
+
+#### 2. GPT2_TitleGen: 文章标题的生成
+- python train.py  &emsp;  # 模型训练
+- python inference.py  &emsp;  # 模型推理
+
+#### 3. Simple-GPT2: 自己实现的GPT2模型
+- python train.py  &emsp;  # 模型训练
+- python inference.py  &emsp;  # 模型推理
+
 
 ## Text_Ranking
+#### 1. BM25: 计算query与所有待排序文本的BM25值，然后根据这个值进行排序。
+- python main.py   &emsp;  # 排序
+
+#### 2. DC_Bert_Ranking: 双塔+交互。首先对query和context分别进行编码，此处的权重不共享，然后将query和context的编码混合，再通过几层交互的transformer-encoder。
+- python train.py  &emsp;  # 模型训练
+- python inference.py  &emsp; # 模型推理
+
+#### 3. DPR_Ranking:Facebook的文本排序模型
+- python train.py  &emsp; # 模型训练
+
+#### 4. MT_Ranking: 用bert-style模型进行编码，然后用cls进行分类，按正样本的得分排序
+- python train.py  &emsp; # 模型训练
+- python inference.py  &emsp;  # 模型推理
+
+#### 5. ReRank: 含模型蒸馏
+- python train.py  &emsp; # 模型训练
+- python train_distill.py  &emsp; # 模型蒸馏
+
 
 ## Text_Similarity
+#### 1. ABCNN: 首先对两个句子进行词嵌入，然后进行池化，得到两个句子的向量，接着计算两个向量的差值，最后对这个差值向量进行不同尺度的卷积，然后进行分类。
+- python train.py  &emsp; # 模型训练
+
+#### 2. BiMPM: 该模型分为四部分: 词嵌入、上下文编码(bilstm)、四种Matching、Aggregation Layer。
+- python train.py  &emsp; # 模型训练
+
+#### 3. DecomposableAttention:这篇论文的核心就是alignment，即词与词的对应关系，文中的alignment用在了两个地方，一个attend部分，是用来计算两个句子之间的attention关系，另一个是compare部分，对两个句子之间的词进行比较，每次的处理都是以词为单位的，最后用前馈神经网络去做预测。很明显可以看到，这篇文章提到的模型并没有使用到词在句子中的时序关系，更多的是强调两句话的词之间的对应关系（alignment）
+- python train.py  &emsp; # 模型训练
+
+#### 4. ESIM: 短文本匹配利器。ESIM 牛逼在它的 inter-sentence attention，就是代码中的 soft_align_attention，这一步中让要比较的两句话产生了交互。以前类似 Siamese 网络的结构，往往中间都没有交互，只是在最后一层求个余弦距离或者其他距离。
+- python train.py  &emsp; # 模型训练
+
+#### 5. RE2: RE2 这个名称来源于该网络三个重要部分的合体：Residual vectors；Embedding vectors；Encoded vectors。
+- python train.py  &emsp; # 模型训练
+
+#### 6. SiaGRU: 双塔结构，对两个sentence分别用GRU编码，然后计算两个句子编码向量的差值，最后用这个差值向量进行分类。
+- python train.py   &emsp; # 模型训练
+
+#### 7. SimCSE: 对比学习，技巧:不同的样本不同的Dropout
+- python train.py  &emsp; # 模型训练
+
+#### 8. BM25: 直接计算两个文本的BM25值，代表其相似程度。
+- python BM25.py  
+
+#### 9. TF_IDF: 直接计算两个文本的TF_IDF值，代表其相似程度。
+- python TF_IDF.py
 
 ## data_augmentation
+#### 1. eda: 使用nlpcda工具包进行数据增广。如: 等价实体替换、随机同义词替换、随机删除字符、位置交换、同音词替换。
+- python 001-run_eda.py
+
+#### 2. 回译-百度: 使用百度翻译进行文本的回译。
+- python 002-run_contrslate_data_aug.py
+
+#### 3. 回译-google: 使用google翻译进行文本的回译。
+- python 003-google_trans_data_aug.py
 
 ## relation_extraction
+#### 1. lstm_cnn_information_extract:  lstm+cnn
+- python train.py  &emsp; # 模型训练
+- python inference.py  &emsp; # 模型推理
+
+#### 2. relation_classification:  关系分类， bilstm+普通注意力
+- python data_helper.py  &emsp; # 数据预处理
+- python train.py  &emsp;  # 模型训练
 
