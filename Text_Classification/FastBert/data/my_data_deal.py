@@ -66,8 +66,8 @@ if __name__ == '__main__':
                       ('help.data', 28),
                       ('reminder.data', 29)
                       ]
-    # path = './TCL_Corpus/'
-    path = './TCL_Corpus_test/'
+
+    path = './Corpus_test/'
     base_file = glob.glob(path + '*')
 
     data_path = []
@@ -82,12 +82,6 @@ if __name__ == '__main__':
         total_data.append(temp_data)
         total_label.append(temp_label)
 
-    # max_len = 0
-    # for d in total_data:
-    #     for i in d:
-    #         if len(i) > max_len:
-    #             max_len = len(i)
-
     write_data = []
     for d, l in zip(total_data, total_label):
         for d_i, l_i in zip(d, l):
@@ -96,21 +90,8 @@ if __name__ == '__main__':
 
     write_data = list(set(write_data))   # 对数据去重
 
-    # # train 100000  dev 50000  test 50000
-    # dev_data = write_data[:50000]
-    # train_data = write_data[50000:]
-    #
-    # # print(len(train_data))   # 101231
-    # # print(len(dev_data))   # 50000
-    # # print(len(test_data))   # 50000
-    # with open('./tcl/train.tsv', 'w') as f:
-    #     f.write('\n'.join(train_data))
-    #
-    # with open('./tcl/train.tsv', 'w') as f:
-    #     f.write('\n'.join(dev_data))
-
     print(len(write_data))
-    with open('./tcl/test.tsv', 'w') as f:
+    with open('./data/test.tsv', 'w') as f:
         f.write('\n'.join(write_data))
 
 
