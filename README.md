@@ -362,7 +362,7 @@
 - python train.py
 
 #### 11. Bert_Whitening: 方法由苏剑林提出，无需训练，直接将每个句子的bert输出统一到标准正交基的下
-- python run_bert_whitening.py
+- python run_bert_whitening.py  # 直接对数据集进行验证 计算斯皮尔曼系数
 
 ## data_augmentation
 #### 1. eda: 使用nlpcda工具包进行数据增广。如: 等价实体替换、随机同义词替换、随机删除字符、位置交换、同音词替换。
