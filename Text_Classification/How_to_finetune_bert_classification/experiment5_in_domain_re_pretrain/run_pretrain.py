@@ -6,14 +6,16 @@
 """
 import argparse
 import os
-import pickle
 import torch
 import torch.nn as nn
 import random
 import numpy as np
+from data_loader import MyDataset
 from torch.utils.data import TensorDataset, DataLoader
 from transformers import AdamW, get_linear_schedule_with_warmup
 from transformers import BertForPreTraining
+from transformers.models.bert import BertTokenizer, BertConfig
+from pdb import set_trace
 
 
 def set_seed(seed):
@@ -39,19 +41,12 @@ if __name__ == '__main__':
     set_seed(args.seed)
     os.makedirs(args.output_dir, exist_ok=True)
 
-    # 加载预处理完的数据
-    with open('./data/imdb_further_pretraining.pkl', 'rb') as f:
-        (train_input_ids, train_attention_masks, train_segment_ids,
-         train_masked_lm_labels, train_next_sentence_labels) = pickle.load(f)
+    tokenizer = BertTokenizer.from_pretrained('../bert_pretrain/vocab.txt')
+    train_data_path = './process_data.json'
+    dataset = MyDataset(train_data_path, tokenizer)
+    train_dataloader = DataLoader(dataset, shuffle=True, batch_size=args.batch_size)
 
-    train_input_ids = torch.tensor(train_input_ids, dtype=torch.long)
-    train_attention_masks = torch.tensor(train_attention_masks, dtype=torch.float)
-    train_segment_ids = torch.tensor(train_segment_ids, dtype=torch.long)
-    train_masked_lm_labels = torch.tensor(train_masked_lm_labels, dtype=torch.long)
-    train_next_sentence_labels = torch.tensor(train_next_sentence_labels, dtype=torch.long)
-
-    train_data = TensorDataset(train_input_ids, train_attention_masks, train_segment_ids, train_masked_lm_labels, train_next_sentence_labels)
-    train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True)
+    bert_config = BertConfig.from_pretrained('../bert_pretrain/config.json')
 
     model = BertForPreTraining.from_pretrained(args.bert_pretrain)
 
@@ -67,23 +62,31 @@ if __name__ == '__main__':
     optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, correct_bias=False)
     scheduler = get_linear_schedule_with_warmup(
                     optimizer, num_warmup_steps=args.num_warmup_steps,
-                    num_training_steps=len(train_loader) * args.num_epochs)
-    total_step = len(train_loader)
+                    num_training_steps=len(train_dataloader) * args.num_epochs)
+    total_step = len(train_dataloader)
+
+    loss_fct = nn.CrossEntropyLoss(ignore_index=-1)
 
     for epoch in range(args.num_epochs):
         model.train()
         model.zero_grad()
-        for step, (cur_input_ids, cur_attention_mask, cur_token_type_ids, cur_masked_lm_labels, cur_next_sentence_labels) in enumerate(train_loader):
+        for step, (cur_input_ids, cur_attention_mask, cur_token_type_ids, cur_masked_lm_labels, cur_next_sentence_labels) in enumerate(train_dataloader):
             if torch.cuda.is_available():
                 cur_input_ids, cur_attention_mask = cur_input_ids.cuda(), cur_attention_mask.cuda()
                 cur_token_type_ids, cur_masked_lm_labels = cur_token_type_ids.cuda(), cur_masked_lm_labels.cuda()
                 cur_next_sentence_labels = cur_next_sentence_labels.cuda()
 
-            loss = model(cur_input_ids, cur_attention_mask, cur_token_type_ids,
-                         labels=cur_masked_lm_labels, next_sentence_label=cur_next_sentence_labels)[0]
+            outputs = model(input_ids=cur_input_ids, token_type_ids=cur_token_type_ids, attention_mask=cur_attention_mask)
+            prediction_scores = outputs[0]
+            seq_relationship_score = outputs[1]
+            # print(prediction_scores.size())    # torch.Size([32, 256, 30522])
+            # print(seq_relationship_score.size())   # torch.Size([32, 2])
 
-            print('Epoch:{}, Step:{}, Loss:{:10f}'.format(epoch, step, loss))
-
+            masked_lm_loss = loss_fct(prediction_scores.view(-1, bert_config.vocab_size), cur_masked_lm_labels.view(-1))
+            next_sentence_loss = loss_fct(seq_relationship_score.view(-1, 2), cur_next_sentence_labels.view(-1))
+            loss = masked_lm_loss + next_sentence_loss
+            print('epoch:{}, step:{}, mask_lm_loss:{:6f}, next_sentence_loss:{:6f}, sum_loss:{:6f}'.format(
+                epoch, step, masked_lm_loss, next_sentence_loss, loss))
             if args.gradient_accumulation_step > 1:
                 loss /= args.gradient_accumulation_step
 
@@ -97,6 +100,5 @@ if __name__ == '__main__':
 
         output_path = args.output_dir + '/' + 'epoch_{}'.format(epoch)
         model.save_pretrained(output_path)
-
         # 再训练之后，可以采用再训练完后的代码进行微调哦!
 
