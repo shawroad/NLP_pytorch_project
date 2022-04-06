@@ -15,7 +15,7 @@ from config import Config
 
 if __name__ == '__main__':
     # 1. 准备数据
-    input_sentence = '中华人民共和国是世界最屌的民族'
+    input_sentence = '随便一个输入即可'
     tokenizer = BertTokenizer.from_pretrained(Config.model_vocab_path)
     tokens = tokenizer.tokenize(input_sentence)
     input_ids = tokenizer.convert_tokens_to_ids(tokens)
