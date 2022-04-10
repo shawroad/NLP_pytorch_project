@@ -1,0 +1,16 @@
+epoch:0, valid_f1:  0.000000, valid_precision:  0.000000, valid_recall:  0.000000
+epoch:1, valid_f1:  0.753539, valid_precision:  0.757152, valid_recall:  0.750875
+epoch:2, valid_f1:  0.787113, valid_precision:  0.798273, valid_recall:  0.777425
+epoch:3, valid_f1:  0.788019, valid_precision:  0.756571, valid_recall:  0.822740
+epoch:4, valid_f1:  0.791510, valid_precision:  0.766905, valid_recall:  0.818339
+epoch:5, valid_f1:  0.787271, valid_precision:  0.774948, valid_recall:  0.800678
+epoch:6, valid_f1:  0.793249, valid_precision:  0.777172, valid_recall:  0.810446
+epoch:7, valid_f1:  0.795977, valid_precision:  0.783673, valid_recall:  0.808869
+epoch:8, valid_f1:  0.787849, valid_precision:  0.776192, valid_recall:  0.800238
+epoch:9, valid_f1:  0.787843, valid_precision:  0.770441, valid_recall:  0.806542
+epoch:10, valid_f1:  0.785327, valid_precision:  0.766049, valid_recall:  0.806150
+epoch:11, valid_f1:  0.789717, valid_precision:  0.777488, valid_recall:  0.802669
+epoch:12, valid_f1:  0.788318, valid_precision:  0.784194, valid_recall:  0.792886
+epoch:13, valid_f1:  0.790160, valid_precision:  0.790119, valid_recall:  0.790527
+epoch:14, valid_f1:  0.791396, valid_precision:  0.782878, valid_recall:  0.800504
+epoch:15, valid_f1:  0.785157, valid_precision:  0.779137, valid_recall:  0.791726
