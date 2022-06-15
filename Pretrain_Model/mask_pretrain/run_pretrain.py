@@ -76,6 +76,8 @@ if __name__ == '__main__':
         for step, batch in enumerate(train_dataloader):
             global_step += 1
             input_ids, attention_mask, segment_ids, lm_mask_labels = batch
+            if torch.cuda.is_available():
+                input_ids, attention_mask, segment_ids, lm_mask_labels = input_ids.cuda(), attention_mask.cuda(), segment_ids.cuda(), lm_mask_labels.cuda() 
             outputs = model(input_ids=input_ids, token_type_ids=segment_ids, attention_mask=attention_mask)
             # print(outputs['prediction_logits'].size())   # torch.Size([2, 256, 21128])
             # print(outputs['seq_relationship_logits'].size())   # torch.Size([2, 2])  # 可以不要 因为我们只训练mask任务
