@@ -8,10 +8,12 @@ import os
 import time
 import cv2
 import paddlehub as hub
-# pip install paddlepaddle==2.2.2
-# pip install paddlehub==2.0.0
-# pip install shapely=='1.8.1.post1'
-# pip install pyclipper=='1.3.0.post2'
+
+# pip install paddlehub==2.0.0 -i https://pypi.tuna.tsinghua.edu.cn/simple 
+# pip install paddlepaddle==2.0.0 -i https://pypi.tuna.tsinghua.edu.cn/simple 
+# 该Module依赖于第三方库shapely、pyclipper，使用该Module之前，请先安装shapely、pyclipper
+# pip install shapely -i https://pypi.tuna.tsinghua.edu.cn/simple 
+# pip install pyclipper -i https://pypi.tuna.tsinghua.edu.cn/simple 
 
 
 if __name__ == '__main__':
