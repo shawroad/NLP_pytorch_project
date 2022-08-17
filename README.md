@@ -2,6 +2,7 @@
   **由于目前这个仓库项目过多，不易维护。因此，后续将各种任务独立开来，分别建立仓库，做很多对比实验，方便使用者挑选模型。有需要的，可以跳转指定仓库，链接如下:**
   - [文本分类仓库](https://github.com/shawroad/Text-Classification-Pytorch)
   - [语义匹配仓库](https://github.com/shawroad/Semantic-Textual-Similarity-Pytorch)
+  - [文本生成仓库](https://github.com/shawroad/Text-Generation-Chinese-Pytorch)
   - 其他仓库正在快马加鞭的更新...
 # 目录
   - [Chatbot](#chatbot)
