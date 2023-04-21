@@ -14,7 +14,7 @@ model = BertForSequenceClassification.from_pretrained('./mengzi_pretrain')
 #     print(x)
 
 # # 准备lora
-# 计算在那个模块上应用lora
+# 计划在那个模块上应用lora
 TARGET_MODULES = [
     "query",
     "key",
