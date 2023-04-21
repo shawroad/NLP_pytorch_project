@@ -14,11 +14,12 @@ model = BertForSequenceClassification.from_pretrained('./mengzi_pretrain')
 #     print(x)
 
 # # 准备lora
-# 计划在那个模块上应用lora
+# 计划在那个模块上应用lora, lora内部的代码是通过正则匹配的    可参考LoraConfig提供的写法。
 TARGET_MODULES = [
     "query",
     "key",
 ]
+
 peft_config = LoraConfig(task_type="SEQ_CLS", target_modules=TARGET_MODULES, inference_mode=False, r=8, lora_alpha=16, lora_dropout=0.1)
 model = get_peft_model(model, peft_config)
 print(model.print_trainable_parameters())
