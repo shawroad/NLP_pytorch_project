@@ -95,7 +95,7 @@ def main():
     json.dump(save_data, open(save_path, 'w', encoding='utf8'), ensure_ascii=False)
     '''
     e_time = time.time()
-    # print("time cost£º{}s".format(e_time - s_time))
+    # print("time costÂ£Âº{}s".format(e_time - s_time))
         
     print(f1 / 50)
     save_path = os.path.join(args.model_dir, "ft_pt_answer.json")
