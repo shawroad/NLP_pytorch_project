@@ -37,7 +37,7 @@ def main():
     
     with open(args.test_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
-        for line in lines:
+        for line in lines[2:]:
             sample = json.loads(line.strip())
             src_tokens = tokenizer.tokenize(sample['context'])
             if len(src_tokens) > args.max_src_len:
@@ -56,7 +56,16 @@ def main():
                 "num_return_sequences": 1,
             }
     
+            response = model.stream_generate(input_ids, **generation_kwargs)
+            for s in response:
+                # tensor([[ 57010,  20012,  20005,  84432, 127502,  86263,  86231,  83860,  84651, 116818,  20031,  20004,  33049,  20012, 150001, 150004,  20005]], device='cuda:0')
+                ids_list = s.tolist()[0] 
+                res = tokenizer.decode(ids_list).replace('<eop>', '')
+                print(res)
+                time.sleep(1)
+            exit()
             response = model.generate_one(input_ids, **generation_kwargs)
+
             res = []
                     
             for i_r in range(generation_kwargs["num_return_sequences"]):
@@ -86,7 +95,7 @@ def main():
     json.dump(save_data, open(save_path, 'w', encoding='utf8'), ensure_ascii=False)
     '''
     e_time = time.time()
-    # print("time cost£º{}s".format(e_time - s_time))
+    # print("time costÂ£Âº{}s".format(e_time - s_time))
         
     print(f1 / 50)
     save_path = os.path.join(args.model_dir, "ft_pt_answer.json")
