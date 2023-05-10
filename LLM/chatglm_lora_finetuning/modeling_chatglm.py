@@ -1366,6 +1366,7 @@ class ChatGLMForConditionalGeneration(ChatGLMPreTrainedModel):
 
             # stop when each sentence is finished, or if we exceed the maximum length
             if unfinished_sequences.max() == 0 or stopping_criteria(input_ids, scores):
+                yield 'stop'
                 break
             yield input_ids
 
